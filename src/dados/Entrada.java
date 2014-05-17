@@ -45,7 +45,7 @@ public class Entrada {
 
 	private void lerArquivo() throws IOException {
 		
-		String path = "C:\\Documents and Settings\\pftbm\\workspace\\todosAtributosSemMedicos-mortalidade.txt";
+		String path = "C://Users//Daniel//workspace//MLP//src//iris.txt";
 		
 		File arq = new File(path);
 		InputStream is = new FileInputStream(arq);

@@ -202,7 +202,7 @@ public class Rede {
 
 	public static void main(String args[]){
 		
-		List<Integer> neuroniosPorCamada = new ArrayList<Integer>();
+		List<Integer> neuroniosPorCamada = new ArrayList<Integer>();		
 		neuroniosPorCamada.add(3);
 		neuroniosPorCamada.add(2);
 		
@@ -217,13 +217,17 @@ public class Rede {
 		int neuroniosEscondidos = cont - neuroniosPorCamada.get(neuroniosPorCamada.size() - 1);
 		
 		int neuroniosSaida = neuroniosPorCamada.get(neuroniosPorCamada.size() - 1);
-		int posicaoDaSaida = 0;//posição na tupla onde se encontra a resposta fornecida para a rede 
+		int posicaoDaSaida = 4;//posição na tupla onde se encontra a resposta fornecida para a rede 
 		try {
 			Rede rede = new Rede(numeroDeCamadas,
 					neuroniosPorCamada, neuroniosEscondidos, neuroniosSaida, posicaoDaSaida, taxaAprendizagem);
 			
 			System.out.println("quantidade de conexões: "+ rede.getConexoes().size());
-			rede.getAlgoritmo().treinamento(rede);
+			for(int i = 0; i < 100; i++){
+				rede.getAlgoritmo().treinamento(rede);
+				System.out.println(rede.getAlgoritmo().ErroEpoca / rede.getAlgoritmo().nPadroes);
+				System.out.println(rede.getAlgoritmo().nPadroes);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

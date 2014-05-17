@@ -5,9 +5,12 @@ import dados.Registro;
 public class Backpropagation {
 	
 	private double n;
+	double ErroEpoca;
+	int nPadroes;
 	
 	public Backpropagation(double n){
 		this.n = n;
+		nPadroes = 0;
 	}
 	
 	public void treinamento(Rede rede){
@@ -32,7 +35,7 @@ public class Backpropagation {
 					this.processarEntradas(neuronio, rede);
 					if(neuronio.isNeuronioSaida()){
 						System.out.println("sinal de saída neuronio "+neuronio.getNumero()+": "+ neuronio.getSinalDeSaida());
-						this.ajustarPesos(neuronio, registro);
+						this.ajustarPesos(neuronio, registro, rede);
 					}
 				}
 			}
@@ -73,17 +76,19 @@ public class Backpropagation {
 	}
 	
 	
-	public void ajustarPesos(Neuronio neuronio, Registro registro){
+	public void ajustarPesos(Neuronio neuronio, Registro registro, Rede rede){
 		double delta = 0;
 		double saidaGerada = neuronio.getSinalDeSaida();
 		double saidaReal = registro.getSaida();
 		int k = 1;
 		delta = k*saidaGerada*(1 - saidaGerada)*(saidaReal - saidaGerada);
 		
-		for(Conexao conexao : neuronio.getConexoesEntrada()){
-			conexao.setW(conexao.getW() + this.n*delta*saidaGerada);
-		}
+		ErroEpoca += Math.abs(saidaReal - saidaGerada);
+		nPadroes++;
 		
+		for(Conexao conexao : rede.getConexoes()){
+			conexao.setW(conexao.getW() + this.n*delta*saidaGerada);			
+		}		
 	}
 	
 
