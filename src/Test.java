@@ -1,3 +1,4 @@
+import java.awt.font.NumericShaper;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -89,19 +90,50 @@ public class Test {
 		}
 	}
 
+	public static List<Registro> normalizarDados(List<Registro> dados){
+		int numeroAtributos = dados.get(0).getTupla().size() - 1;
+		
+		for (int i = 0; i < numeroAtributos; i++) {
+			double min = 0, max = 0;			
+			for(int j = 0; j < dados.size(); j++){
+				double valor = dados.get(j).getTupla().get(i);
+				if(j == 0){
+					min = valor;
+					max = valor;
+				}else{
+					if(valor < min){
+						min = valor;
+					}
+					if(valor > max){
+						max = valor;
+					}
+				}				
+			}
+			for(int j = 0; j < dados.size(); j++){
+				double valor = dados.get(j).getTupla().get(i);
+				double normal = (valor - min) / (max - min);
+				dados.get(j).getTupla().set(i, normal);
+			}
+		}
+		
+		return dados;
+	}
+	
 	public static void main(String[] args) throws IOException {
 		MLP mlp = new MLP(4, 3, 2);
 		mlp.setLearningRate(0.1);
 
 		lerArquivo();
-
+		dadosDeTreinamento = normalizarDados(dadosDeTreinamento);
+		dadosDeTeste = normalizarDados(dadosDeTeste);
+		
 		int numeroAtributos = dadosDeTreinamento.get(0).getTupla().size() - 1;
 
 		double[] entradas = new double[numeroAtributos];
 		double[] saidas = new double[1];
 		double[] result = new double[2];
 
-		for (int epoca = 0; epoca < 10; epoca++) { // Numero de Epocas
+		for (int epoca = 0; epoca < 100; epoca++) { // Numero de Epocas
 
 			for (int i = 0; i < dadosDeTreinamento.size(); i++) { // Para cada dado
 				for (int j = 0; j < numeroAtributos; j++) { // Para cada tupla
