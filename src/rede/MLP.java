@@ -1,18 +1,8 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-
-import javax.swing.JFrame;
-
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
+package rede;
 
 public class MLP {
 
-	int nInputs, nHidden, nOutput; // Neurônios por camada
+	public int nInputs, nHidden, nOutput; // Neurônios por camada
 	private double[/* i */] input, hidden, output; // Saidas da camada de entrada, da escondida e da de saída
 
 	private double[/* j */][/* i */] pesosCamada1; // Pesos das conexões entre o neurônio j da camada escondida
@@ -22,10 +12,9 @@ public class MLP {
 											   // e o i da camada escondida					
 	private double learningRate = 0.5;	
 	
-	double erroTreinamentoDaEpoca;
-	double erroValidacaoDaEpoca;
+	public double erroTreinamentoDaEpoca;
+	public double erroValidacaoDaEpoca;
 
-	DefaultCategoryDataset ds;
 
 	public MLP(int nInput, int nHidden, int nOutput) {
 
@@ -42,27 +31,7 @@ public class MLP {
 		pesosCamada2 = new double[nOutput + 1][nHidden + 1];
 
 		// Inicializar os Pesos
-		gerarPesosAleatorios();
-
-		// Gráfico
-		JFrame jf = new JFrame();
-		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jf.setSize(800, 600);
-
-		ds = new DefaultCategoryDataset();
-
-		JFreeChart chart = ChartFactory.createLineChart("Erros",
-				"Nº Épocas", "Erro %", ds, PlotOrientation.VERTICAL, true, true,
-				true);
-
-		CategoryItemRenderer renderer = chart.getCategoryPlot().getRenderer();
-		renderer.setSeriesPaint(0, Color.RED);
-		renderer.setSeriesPaint(1, Color.YELLOW);
-
-		ChartPanel panel = new ChartPanel(chart);
-		jf.add(panel, BorderLayout.CENTER);
-
-		jf.setVisible(true);
+		gerarPesosAleatorios();	
 	}
 
 	public void setLearningRate(double lr) {
@@ -82,23 +51,26 @@ public class MLP {
 			}
 	}
 
+	private double calcularErro(double[] desiredOutput){
+		double erroTotal = 0;
+		double[] erroCamadaSaida = new double[nOutput + 1];
+		
+		for (int i = 1; i <= nOutput; i++) { 
+			erroCamadaSaida[i] = desiredOutput[i-1] - output[i];// * output[i] * (1.0 - output[i]);// Erro da camada de saída
+			erroTotal += Math.pow(erroCamadaSaida[i], 2);
+		}
+		erroTotal = erroTotal / 2;  // Calculando erro da rede para o padrão
+		// 1/2 E e^2
+		return erroTotal;
+	}
 
 	public double[] treinar(double[] pattern, double[] desiredOutput) {
 		double[] output = null;
 
 		output = forward(pattern);
-		backward(desiredOutput);
-
-		double erroTotal = 0;
-		double[] erroCamadaSaida = new double[nOutput + 1];
+		backward(desiredOutput);		
 		
-		for (int i = 1; i <= nOutput; i++) { 
-			erroCamadaSaida[i] = (desiredOutput[0] - output[i]);// * output[i] * (1.0 - output[i]);// Erro da camada de saída
-			erroTotal += erroCamadaSaida[i] * erroCamadaSaida[i];
-		}
-		
-		erroTotal = erroTotal / 2;  // Calculando erro da rede para o padrão
-		this.erroTreinamentoDaEpoca += erroTotal;
+		this.erroTreinamentoDaEpoca += calcularErro(desiredOutput);
 		
 		return output;
 	}
@@ -106,18 +78,9 @@ public class MLP {
 	public double[] validar(double[] pattern, double[] desiredOutput) {
 		double[] output = null;
 
-		output = forward(pattern);
-				
-		double erroTotal = 0;
-		double[] erroCamadaSaida = new double[nOutput + 1];
+		output = forward(pattern);			
 		
-		for (int i = 1; i <= nOutput; i++) { 
-			erroCamadaSaida[i] = (desiredOutput[0] - output[i]);// * output[i] * (1.0 - output[i]);// Erro da camada de saída
-			erroTotal += erroCamadaSaida[i] * erroCamadaSaida[i];
-		}
-		
-		erroTotal = erroTotal / 2;  // Calculando erro da rede para o padrão
-		this.erroValidacaoDaEpoca += erroTotal;
+		this.erroValidacaoDaEpoca += calcularErro(desiredOutput);
 		
 		return output;
 	}
@@ -161,7 +124,7 @@ public class MLP {
 		double Esum = 0.0;
 
 		for (int i = 1; i <= nOutput; i++) { 
-			erroCamadaSaida[i] = output[i] * (1.0 - output[i]) * (desiredOutput[0] - output[i]);// Erro da camada de saída
+			erroCamadaSaida[i] = output[i] * (1.0 - output[i]) * (desiredOutput[i-1] - output[i]);// Erro da camada de saída
 		}
 		
 		for (int i = 0; i <= nHidden; i++) { // Erro da camada escondida usando gradiente
