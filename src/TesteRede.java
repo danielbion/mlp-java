@@ -18,6 +18,7 @@ import rede.MLP;
 public class TesteRede {
 
 	static DefaultCategoryDataset ds;
+	static int intervalo_impressao_resultados = 1;
 	
 	public static void main(String[] args) throws IOException {
 		// Gráfico
@@ -44,17 +45,18 @@ public class TesteRede {
 		rm.lerArquivos();
 	
 		int numeroAtributos = rm.dadosDeTreinamento.get(0).getTupla().size() - 1;
-		int numeroEscondida = 3;
+		int numeroEscondida = 5;
 		int numeroSaida = 2;
 
-		MLP mlp = new MLP(numeroAtributos, numeroEscondida, numeroSaida);
+		MLP mlp = new MLP(numeroAtributos, numeroEscondida, numeroSaida, 10);
 		mlp.setLearningRate(0.1);
+		mlp.setMomentumRate(0);
 
 		double[] entradas = new double[numeroAtributos];
 		double[] saidas = new double[numeroSaida];
-		double[] result = new double[2];
+		double[] result = new double[numeroSaida];
 
-		for (int epoca = 0; epoca < 100; epoca++) { // Numero de Epocas
+		for (int epoca = 0; epoca < 10000; epoca++) { // Numero de Epocas
 
 			for (int i = 0; i < rm.dadosDeTreinamento.size(); i++) { // Para cada dado
 				for (int j = 0; j < numeroAtributos; j++) { // Para cada tupla
@@ -71,9 +73,9 @@ public class TesteRede {
 				result = mlp.treinar(entradas, saidas);
 			}
 
-			ds.addValue(
+			if (epoca%intervalo_impressao_resultados==0) ds.addValue(
 					mlp.erroTreinamentoDaEpoca * 100/ rm.dadosDeTreinamento.size(), "Erro de Treinamento",
-					"" + epoca);
+					"" + epoca); 
 			mlp.erroTreinamentoDaEpoca = 0;
 
 			entradas = new double[numeroAtributos];
@@ -93,15 +95,16 @@ public class TesteRede {
 				}
 				result = mlp.validar(entradas, saidas);
 
-				for (int j = 1; j <= mlp.nOutput; j++) {
-					System.out.println("Neurônio" + j + ": " + result[j]);
-				}
+//				for (int j = 1; j <= mlp.nOutput; j++) {
+//					System.out.println("Neurônio" + j + ": " + result[j]);
+//				}
 
 			}
-
-			ds.addValue(mlp.erroValidacaoDaEpoca * 100 / rm.dadosDeTeste.size(),
+			if (epoca%intervalo_impressao_resultados==0){
+				ds.addValue(mlp.erroValidacaoDaEpoca * 100 / rm.dadosDeTeste.size(),
 					"Erro Validação", "" + epoca);
-
+				System.out.println(mlp.erroValidacaoDaEpoca * 100 / rm.dadosDeTeste.size() + "Epoca " + epoca);
+			}
 			mlp.erroValidacaoDaEpoca = 0;
 		}
 

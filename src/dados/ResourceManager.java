@@ -22,9 +22,15 @@ public class ResourceManager {
 
 		for (int i = 0; i < 2; i++) {
 			if (i == 0) {
+				//file = "dados_model_rep.txt";
+				//file = "DATA_MODELO_MOD.txt";
 				file = "treinamento.txt";
+				file = "DADOS_MODELO_REP2.txt";
 			} else {
+				//file = "dados_validacao_rep.txt";
+				//file = "DATA_VALIDACAO_MOD.txt";
 				file = "teste.txt";
+				file = "DADOS_VALIDACAO_REP2.txt";
 			}
 
 			File arq = new File(path + file);
@@ -32,7 +38,8 @@ public class ResourceManager {
 			InputStreamReader isr = new InputStreamReader(is);
 			@SuppressWarnings("resource")
 			BufferedReader br = new BufferedReader(isr);
-			String linha = br.readLine();			
+			String linha = br.readLine();
+			linha = br.readLine();	
 			while (linha != null) {
 				carregarUnidadesDeEntrada(linha, i == 0 ? true : false);
 				linha = br.readLine();	
