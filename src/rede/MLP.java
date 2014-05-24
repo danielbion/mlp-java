@@ -41,15 +41,11 @@ public class MLP {
 		pesosCamada1 = new double[nHidden + 1][nInput + 1];
 		pesosCamada2 = new double[nOutput + 1][nHidden + 1];
 
-		pesosCamadasEscondidas = new double[nCamadasEscondidas - 1][nHidden + 1][nHidden + 1];
-
-		// pesosCamada1_Tm1 = new double[nHidden + 1][nInput + 1];
-		// pesosCamada2_Tm1 = new double[nOutput + 1][nHidden + 1];
+		pesosCamadasEscondidas = new double[nCamadasEscondidas - 1][nHidden + 1][nHidden + 1];	
 
 		// Inicializar os Pesos
 		gerarPesosAleatorios();
 
-		// primeiraVez = true;
 	}
 
 	private void gerarPesosAleatorios() {
@@ -80,12 +76,9 @@ public class MLP {
 		double[] erroCamadaSaida = new double[nOutput + 1];
 
 		for (int i = 1; i <= nOutput; i++) {
-			erroCamadaSaida[i] = desiredOutput[i - 1] - output[i];// * output[i]
-																	// * (1.0 -
-																	// output[i]);//
-																	// Erro da
-																	// camada de
-																	// saída
+			erroCamadaSaida[i] = desiredOutput[i - 1] - output[i];
+			// * output[i] * (1.0 - output[i]);  Erro da camada de saída
+			
 			erroTotal += Math.pow(erroCamadaSaida[i], 2);
 		}
 		erroTotal = erroTotal / 2; // Calculando erro da rede para o padrão
@@ -166,16 +159,16 @@ public class MLP {
 		
 		// Erro da camada de saída
 		for (int i = 1; i <= nOutput; i++) {
-			erroCamadaSaida[i] = output[i] * (1.0 - output[i])
-					* (desiredOutput[i - 1] - output[i]);
+			erroCamadaSaida[i] = output[i] * (1.0 - output[i])*
+					(desiredOutput[i - 1] - output[i]);
 		}
 		//Erro da ultima camada escondida 
 		for (int i = 1; i <= nHidden; i++) {
 			for (int j = 1; j <= nOutput; j++) {
 				Esum += pesosCamada2[j][i] * erroCamadaSaida[j];
 			}
-			erroCamadaEscondida[nCamadasEscondidas - 1][i] = hidden[nCamadasEscondidas - 1][i]
-					* (1.0 - hidden[nCamadasEscondidas - 1][i]) * Esum;
+			erroCamadaEscondida[nCamadasEscondidas - 1][i] = hidden[nCamadasEscondidas - 1][i] * (1.0 - hidden[nCamadasEscondidas - 1][i]) * 
+					Esum;
 			Esum = 0.0;
 		}
 
@@ -186,8 +179,8 @@ public class MLP {
 					Esum += pesosCamadasEscondidas[h][j][i]
 							* erroCamadaEscondida[h + 1][j];
 				}
-				erroCamadaEscondida[h][i] = hidden[h][i] * (1.0 - hidden[h][i])
-						* Esum;
+				erroCamadaEscondida[h][i] = hidden[h][i] * (1.0 - hidden[h][i])*
+						Esum;
 				Esum = 0.0;
 			}
 		}

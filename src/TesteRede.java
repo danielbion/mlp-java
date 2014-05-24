@@ -44,25 +44,26 @@ public class TesteRede {
 
 		rm.lerArquivos();
 	
-		int numeroAtributos = rm.dadosDeTreinamento.get(0).getTupla().size() - 1;
-		int numeroEscondida = 5;
-		int numeroSaida = 2;
+		int numeroNosEntrada= rm.dadosDeTreinamento.get(0).getTupla().size() - 1;
+		int numeroNosEscondida = 8;
+		int numeroNosSaida = 2;
+		int numeroCamadasEscondidas = 8;
 
-		MLP mlp = new MLP(numeroAtributos, numeroEscondida, numeroSaida, 10);
+		MLP mlp = new MLP(numeroNosEntrada, numeroNosEscondida, numeroNosSaida, numeroCamadasEscondidas);
 		mlp.setLearningRate(0.1);
 		mlp.setMomentumRate(0);
 
-		double[] entradas = new double[numeroAtributos];
-		double[] saidas = new double[numeroSaida];
-		double[] result = new double[numeroSaida];
+		double[] entradas = new double[numeroNosEntrada];
+		double[] saidas = new double[numeroNosSaida];
+		double[] result = new double[numeroNosSaida];
 
-		for (int epoca = 0; epoca < 10000; epoca++) { // Numero de Epocas
+		for (int epoca = 0; epoca < 5000; epoca++) { // Numero de Epocas
 
 			for (int i = 0; i < rm.dadosDeTreinamento.size(); i++) { // Para cada dado
-				for (int j = 0; j < numeroAtributos; j++) { // Para cada tupla
+				for (int j = 0; j < numeroNosEntrada; j++) { // Para cada tupla
 					entradas[j] = rm.dadosDeTreinamento.get(i).getTupla().get(j); // Pegar os atributos
 				}
-				if (rm.dadosDeTreinamento.get(i).getTupla().get(numeroAtributos) == 1) { // Se o alvo é 1
+				if (rm.dadosDeTreinamento.get(i).getTupla().get(numeroNosEntrada) == 1) { // Se o alvo é 1
 					saidas[0] = 1;
 					saidas[1] = 0;
 				} else {
@@ -78,15 +79,15 @@ public class TesteRede {
 					"" + epoca); 
 			mlp.erroTreinamentoDaEpoca = 0;
 
-			entradas = new double[numeroAtributos];
-			saidas = new double[numeroSaida];
-			result = new double[2];
+			entradas = new double[numeroNosEntrada];
+			saidas = new double[numeroNosSaida];
+			result = new double[numeroNosSaida];
 
 			for (int i = 0; i < rm.dadosDeTeste.size(); i++) { 
-				for (int j = 0; j < numeroAtributos; j++) { 
+				for (int j = 0; j < numeroNosEntrada; j++) { 
 					entradas[j] = rm.dadosDeTeste.get(i).getTupla().get(j); 																			
 				}
-				if (rm.dadosDeTeste.get(i).getTupla().get(numeroAtributos) == 1) { 
+				if (rm.dadosDeTeste.get(i).getTupla().get(numeroNosEntrada) == 1) { 
 					saidas[0] = 1;
 					saidas[1] = 0;
 				} else {

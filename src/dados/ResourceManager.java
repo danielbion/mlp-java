@@ -46,8 +46,7 @@ public class ResourceManager {
 			}
 		}
 		
-		normalizarDados(dadosDeTreinamento);
-		normalizarDados(dadosDeTeste);
+		normalizarDados();
 	}
 
 	private void carregarUnidadesDeEntrada(String linha, boolean treino) {
@@ -96,13 +95,14 @@ public class ResourceManager {
 		}
 	}
 
-	private List<Registro> normalizarDados(List<Registro> dados){
-		int numeroAtributos = dados.get(0).getTupla().size() - 1;
+	private void normalizarDados(){
+		int numeroAtributos = dadosDeTreinamento.get(0).getTupla().size() - 1;
 		
+		double min = 0, max = 0;	
 		for (int i = 0; i < numeroAtributos; i++) {
-			double min = 0, max = 0;			
-			for(int j = 0; j < dados.size(); j++){
-				double valor = dados.get(j).getTupla().get(i);
+					
+			for(int j = 0; j < dadosDeTreinamento.size(); j++){
+				double valor = dadosDeTreinamento.get(j).getTupla().get(i);
 				if(j == 0){
 					min = valor;
 					max = valor;
@@ -115,13 +115,35 @@ public class ResourceManager {
 					}
 				}				
 			}
-			for(int j = 0; j < dados.size(); j++){
-				double valor = dados.get(j).getTupla().get(i);
+			
+			for(int j = 0; j < dadosDeTeste.size(); j++){
+				double valor = dadosDeTeste.get(j).getTupla().get(i);
+				if(j == 0){
+					min = valor;
+					max = valor;
+				}else{
+					if(valor < min){
+						min = valor;
+					}
+					if(valor > max){
+						max = valor;
+					}
+				}				
+			}
+			
+			
+			for(int j = 0; j < dadosDeTreinamento.size(); j++){
+				double valor = dadosDeTreinamento.get(j).getTupla().get(i);
 				double normal = (valor - min) / (max - min);
-				dados.get(j).getTupla().set(i, normal);
+				dadosDeTreinamento.get(j).getTupla().set(i, normal);
+			}
+			
+			for(int j = 0; j < dadosDeTeste.size(); j++){
+				double valor = dadosDeTeste.get(j).getTupla().get(i);
+				double normal = (valor - min) / (max - min);
+				dadosDeTeste.get(j).getTupla().set(i, normal);
 			}
 		}
 		
-		return dados;
 	}
 }
